@@ -7,7 +7,6 @@ export default async function Home() {
    if(session?.user) {
     redirect("/home")
    }
-   
   return (
     <main>
       <LandingPage />

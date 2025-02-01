@@ -8,23 +8,18 @@ import { BillingSchema } from "@/lib/validation";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { User, Mail, Home, Calendar, Phone, FileText, ArrowRight, Wallet, IndianRupee, CreditCard } from "lucide-react";
 import React from "react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
+import { getPatientByNumber, savePatientData } from "@/lib/actions/billingdata";
 
-const mockData = [
-  { number: "520-995-3718", fullname: "Genni", date: "2024-05-26", email: "gbodker0@google.com.hk", address: "11th Floor", note: "Hello" },
-  { number: "712-815-3727", fullname: "Barbabra", date: "2024-07-22", email: "bhaylor1@guardian.co.uk", address: "Apt 1153", note: "Hello" },
-  { number: "617-278-6805", fullname: "Madel", date: "2024-05-18", email: "mbyne2@examiner.com", address: "PO Box 86533", note: "Hello" },
-  { number: "288-908-7833", fullname: "Griselda", date: "2024-06-06", email: "gdelion3@arstechnica.com", address: "Room 847", note: "Hello" },
-  { number: "259-115-9237", fullname: "Ardella", date: "2024-08-12", email: "aseres4@berkeley.edu", address: "11th Floor", note: "Hello" },
-];
+
+type BillingFormData = z.infer<typeof BillingSchema>;
 
 const Billing = () => {
-    const router = useRouter();
+    
     const form = useForm<z.infer<typeof BillingSchema>>({
         resolver: zodResolver(BillingSchema),
         defaultValues: {
@@ -34,31 +29,70 @@ const Billing = () => {
             note: "",
             number: "",
             address: "",
-            paymentmethod:"Cash",
+            paymentmethod:"UPI",
+            discount:"",
         }
     });
 
-    const fetchUserDetails = (event: React.FocusEvent<HTMLInputElement>) => {
-            const inputNumber = event.target.value;
-            const existingRecord = mockData.find((record) => record.number === inputNumber);
+    const fetchUserDetails = async (event: React.FocusEvent<HTMLInputElement>) => {
+        const inputNumber = event.target.value;
         
-            if (existingRecord) {
-              form.setValue("fullname", existingRecord.fullname);
-              form.setValue("email", existingRecord.email);
-              form.setValue("date", existingRecord.date);
-              form.setValue("note", existingRecord.note);
-              form.setValue("address", existingRecord.address);
+        if (!inputNumber) return;
+    
+        try {
+            const result = await getPatientByNumber(inputNumber);
+            
+            if (result.success && result.data) {
+                
+                form.setValue("fullname", result.data.fullname);
+                form.setValue("email", result.data.email!);
+                form.setValue("note", result.data.note || '');
+                form.setValue("address", result.data.address!);
+                
+                toast({
+                    title: "Success",
+                    description: "Patient details loaded successfully",
+                });
+            } else {
+                toast({
+                    title: "Note",
+                    description: "No existing patient found with this number",
+                    variant: "default",
+                });
             }
-          };
-
-    const onsubmit = async (values: z.infer<typeof BillingSchema>) => {
-        const result = await values;
-        if(result) {
+        } catch (error) {
+            console.error('Error fetching patient details:', error);
             toast({
-                title: "Success",
-                description: "Your information has been submitted successfully."
+                title: "Error",
+                description: "Failed to fetch patient details",
+                variant: "destructive",
             });
-            router.push("/hello");
+        }
+    };
+    
+          
+    const onsubmit = async (data: BillingFormData) => {
+        try {
+            const result = await savePatientData(data);
+            if (result.success) {
+                toast({
+                  title: "Success",
+                  description: "Account created successfully!",
+                });
+              } else {
+                toast({
+                  title: "Error",
+                  description: result.error || "An error occurred",
+                  variant: "destructive",
+                });
+              }
+        } catch (error) {
+            console.log(error)
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
         }
     };
 
@@ -202,6 +236,7 @@ const Billing = () => {
                             )}
                         />
                         <FormField
+                        defaultValue="UPI"
                             control={form.control}
                             name="paymentmethod"
                             render={({ field }) => (
@@ -213,7 +248,7 @@ const Billing = () => {
                                     <FormControl>
                                         <RadioGroup
                                             onValueChange={field.onChange}
-                                            defaultValue={field.value}
+                                            defaultValue={"UPI"}
                                             className="grid grid-cols-2 gap-4"
                                         >
                                             <Label
@@ -244,6 +279,34 @@ const Billing = () => {
                                 </FormItem>
                             )}
                         />
+                        <FormField
+    control={form.control}
+    name="discount"
+    render={({ field }) => (
+        <FormItem>
+            <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                <IndianRupee className="h-4 w-4 text-primary" />
+                Discount
+            </FormLabel>
+            <FormControl>
+                <div className="relative">
+                    <Input 
+                        type="number"
+                        min="0"
+                        max="100"
+                        placeholder="Enter discount percentage"
+                        className="bg-background/50 focus:bg-background transition-colors pr-8"
+                        {...field}
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                        %
+                    </span>
+                </div>
+            </FormControl>
+            <FormMessage />
+        </FormItem>
+    )}
+/>
                         </div>
                     </form>
                 </Form>

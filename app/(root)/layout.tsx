@@ -10,10 +10,14 @@ const layout = async ({children}: {children:React.ReactNode}) => {
 
   return (
     <div>
-        <Navbar />
-        {children}
-    </div>
+      <Navbar initialSession = {session} />
+      {children}
+    </div>   
   )
 }
 
 export default layout
+
+
+
+

@@ -6,7 +6,12 @@ import { hash } from "bcryptjs";
 const client = new PrismaClient;
 
 
-export const signUp = async (params) => {
+export const signUp = async (params: {
+    name:string,
+    email:string,
+    password:string,
+    confirmPassword:string,
+}) => {
     const {name, email, password, confirmPassword} = params;
 
    if(password != confirmPassword) {
@@ -28,7 +33,7 @@ export const signUp = async (params) => {
    try {
     await client.user.create({
         data:{
-            name,
+            name: name || email.split('@')[0],
             email,
             password:hashedPassword,
         },
@@ -41,7 +46,10 @@ export const signUp = async (params) => {
     
 }
 
-export const signinWithCredentials = async (params) => {
+export const signinWithCredentials = async (params: {
+    email:string,
+    password:string,
+}) => {
     const {email,password} = params;
 
     try {

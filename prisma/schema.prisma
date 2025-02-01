@@ -20,3 +20,20 @@ model User {
   email     String   @unique
   password  String
 }
+
+enum PaymentMethod {
+  UPI
+  CASH
+}
+
+model Patient {
+  id            Int           @id @default(autoincrement())
+  number        String        @unique
+  fullname      String
+  email         String?
+  date          DateTime
+  note          String?
+  address       String?
+  discount      String?
+  paymentmethod PaymentMethod @default(UPI)
+}

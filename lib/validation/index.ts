@@ -23,6 +23,7 @@ export const BillingSchema = z.object({
     note:z.string(),
     number : z.string().min(10, {message:"Number should be 10 digits long."}),
     address: z.string(),
-    paymentmethod: z.enum(["UPI", "Cash"]),
+    paymentmethod: z.enum(["UPI", "CASH"]),
+    discount:z.string(),
 })
 

@@ -27,6 +27,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             where: {
               email: credentials.email,
             },
+            select: {
+              id:true,
+              email: true,
+              password:true,
+              name:true,
+            }
           })
 
           if(!user) {
@@ -42,9 +48,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           console.log("this is user object being returned", user);
           
           return {
-            id:user.id.toString(),
+            id:user.id,
             email:user.email,
-            name:user.email,
+            name:user.name || user.email.split('@')[0],
           } as User
         } catch (error) {
           console.log("Authorization Error:", error);
@@ -61,6 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if(user) {
         token.id =  user.id;
         token.name = user.name;
+        token.email = user.email;
       }
       return token;
     },
@@ -69,6 +76,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if(session.user) {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
+        session.user.email = token.email as string
       }
       return session;
     },

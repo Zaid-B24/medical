@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { auth } from "@/auth";
-import { SessionProvider } from "next-auth/react";
-import { Toaster } from "@/components/ui/toaster"
-import { ThemeProvider } from "@/components/Themes/ThemeProvider"
+import { Providers } from "./Providers";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,24 +19,14 @@ export const metadata: Metadata = {
 };
 
  const RootLayout = async ({children}: Readonly<{children: React.ReactNode}>) => {
-  const session = await auth();
-
   return (
     <html lang="en" suppressHydrationWarning>
-      <SessionProvider session={session}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      ><ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers>
         {children}
-        </ThemeProvider>
-        <Toaster />
+        </Providers>
       </body>
-      </SessionProvider>
     </html>
   );
 }
