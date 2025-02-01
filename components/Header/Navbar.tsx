@@ -1192,11 +1192,11 @@ export const Navbar = ({initialSession}: NavbarProps) => {
       className={cn(
         "sticky top-0 z-[999] w-full",
         "bg-background/70 backdrop-blur-xl",
-        "border-b border-border/50 opacity-50",
+        "border-b border-border/50 opacity-20",
         "shadow-lg shadow-black/5"
       )}
     >
-      <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-16 sm:px-8 lg:px-20">
         <div className="flex h-16 items-center justify-between">
           <motion.div
             className="flex items-center"
@@ -1216,20 +1216,20 @@ export const Navbar = ({initialSession}: NavbarProps) => {
                   <ArrowLeft className="size-5" />
                 </Button>
               )}
-              <Link href={'/'} className="flex items-center pl-4 sm:pl-8">
-                <div className="flex items-center space-x-2 group">
-                  <motion.div
-                    whileHover={{ rotate: 360, scale: 1.1 }}
-                    transition={{ duration: 0.5 }}
-                    className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg"
-                  >
-                    <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400 transition-colors group-hover:text-blue-700" />
-                  </motion.div>
-                  <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent transition-all duration-300 group-hover:opacity-80">
-                    MediTrack Pro
-                  </span>
-                </div>
-              </Link>
+              <Link href={'/'} className="flex items-center pl-16 sm:pl-12">
+  <div className="flex items-center space-x-2 group">
+    <motion.div
+      whileHover={{ rotate: 360, scale: 1.1 }}
+      transition={{ duration: 0.5 }}
+      className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg"
+    >
+      <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400 transition-colors group-hover:text-blue-700" />
+    </motion.div>
+    <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent transition-all duration-300 group-hover:opacity-80 p-1">
+      MediTrack Pro
+    </span>
+  </div>
+</Link>
             </div>
           </motion.div>
 
